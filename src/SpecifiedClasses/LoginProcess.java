@@ -10,10 +10,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class LoginProcess {
-    public int login(Connection connection, String username, String password) throws SQLException {
-        Uczniowie uczniowie;
-        Nauczyciele nauczyciele;
-        Dyrektor dyrektor;
+    public int login(Connection connection, String username, String password,
+                     Uczniowie uczniowie,
+                     Nauczyciele nauczyciele,
+                     Dyrektor dyrektor) throws SQLException {
+
         try (Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(
                     "SELECT * \n" +
@@ -21,7 +22,7 @@ public class LoginProcess {
                             "WHERE nauczyciele.login = '" + username + "'\n" +
                             "AND nauczyciele.haslo = '" + password + "'");
             if (resultSet.next()) {
-                nauczyciele = new Nauczyciele();
+
                 nauczyciele.setId_nauczyciela(resultSet.getInt(1));
                 nauczyciele.setImie(resultSet.getString(4));
                 nauczyciele.setNazwisko(resultSet.getString(5));
@@ -33,7 +34,7 @@ public class LoginProcess {
                             "WHERE uczniowie.login = '" + username + "'\n" +
                             "AND nauczyciele.haslo = '" + password + "'");
             if (resultSet.next()) {
-                uczniowie = new Uczniowie();
+
                 uczniowie.setId_ucznia(resultSet.getInt(1));
                 uczniowie.setImie(resultSet.getString(4));
                 uczniowie.setNazwisko(resultSet.getString(5));
@@ -45,13 +46,14 @@ public class LoginProcess {
                             "WHERE dyrektor.login = '" + username + "'\n" +
                             "AND dyrektor.haslo = '" + password + "'");
             if (resultSet.next()) {
-                uczniowie = new Uczniowie();
-                uczniowie.setId_ucznia(resultSet.getInt(1));
-                uczniowie.setImie(resultSet.getString(4));
-                uczniowie.setNazwisko(resultSet.getString(5));
-                return 2;//zalogowano jako uczen
+
+                dyrektor.setId_dyrektora(resultSet.getInt(1));
+                dyrektor.setImie(resultSet.getString(4));
+                dyrektor.setNazwisko(resultSet.getString(5));
+                return 3;//zalogowano jako dyrektor
             }
-            return 0;
+
+            return 0;//nie ma takiej osoby
         }
     }
 }
