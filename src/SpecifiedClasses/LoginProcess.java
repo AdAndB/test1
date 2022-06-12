@@ -1,5 +1,9 @@
 package SpecifiedClasses;
 
+import TableClasses.Dyrektor;
+import TableClasses.Nauczyciele;
+import TableClasses.Uczniowie;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,12 +11,45 @@ import java.sql.Statement;
 
 public class LoginProcess {
     public int login(Connection connection, String username, String password) throws SQLException {
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(
-                "SELECT *\n" +
-                        "FROM nauczyciele\n" +
-                        "ORDER BY id_nauczyciela")) {
-            while (resultSet.next()) {
-
+        Uczniowie uczniowie;
+        Nauczyciele nauczyciele;
+        Dyrektor dyrektor;
+        try (Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(
+                    "SELECT * \n" +
+                            "FROM nauczyciele\n" +
+                            "WHERE nauczyciele.login = '" + username + "'\n" +
+                            "AND nauczyciele.haslo = '" + password + "'");
+            if (resultSet.next()) {
+                nauczyciele = new Nauczyciele();
+                nauczyciele.setId_nauczyciela(resultSet.getInt(1));
+                nauczyciele.setImie(resultSet.getString(4));
+                nauczyciele.setNazwisko(resultSet.getString(5));
+                return 1;//zalogowano jako nauczyciel
+            }
+            resultSet = statement.executeQuery(
+                    "SELECT * \n" +
+                            "FROM uczniowie\n" +
+                            "WHERE uczniowie.login = '" + username + "'\n" +
+                            "AND nauczyciele.haslo = '" + password + "'");
+            if (resultSet.next()) {
+                uczniowie = new Uczniowie();
+                uczniowie.setId_ucznia(resultSet.getInt(1));
+                uczniowie.setImie(resultSet.getString(4));
+                uczniowie.setNazwisko(resultSet.getString(5));
+                return 2;//zalogowano jako uczen
+            }
+            resultSet = statement.executeQuery(
+                    "SELECT * \n" +
+                            "FROM dyrektor\n" +
+                            "WHERE dyrektor.login = '" + username + "'\n" +
+                            "AND dyrektor.haslo = '" + password + "'");
+            if (resultSet.next()) {
+                uczniowie = new Uczniowie();
+                uczniowie.setId_ucznia(resultSet.getInt(1));
+                uczniowie.setImie(resultSet.getString(4));
+                uczniowie.setNazwisko(resultSet.getString(5));
+                return 2;//zalogowano jako uczen
             }
             return 0;
         }
